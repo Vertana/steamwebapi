@@ -38,14 +38,8 @@ impl ApiClient {
             apikey: apikey 
         }
     }
-    pub fn get_player_summaries(&self, steamids: &[u64]) -> Result<serde_json::Value, Error> { 
-        let steamids_str = {
-            let mut steamids_str = String::new();
-            for steamid in steamids {
-                steamids_str = steamids_str + "," + &steamid.to_string();
-            }
-            steamids_str
-        };
+    pub fn get_player_summary(&self, steamid: u64) -> Result<serde_json::Value, Error> { 
+        let steamids_str = steamid.to_string(); 
         let endpoint = {
             let mut endpoint = hyper::Url::parse("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/").unwrap();
             endpoint.set_query_from_pairs(vec![
@@ -62,18 +56,18 @@ impl ApiClient {
             body
         };
 
-        Ok(try!(serde_json::from_str::<serde_json::Value>(&body)))
-    }
-    pub fn get_player_server(&self, steamid: u64) -> Result<Option<String>, Error> {
-        let json = try!(self.get_player_summaries(&[steamid]));
+        let json = try!(serde_json::from_str::<serde_json::Value>(&body));
         let player = json.as_object().and_then(|o| o.get("response"))
             .and_then(|response| response.as_object())
             .and_then(|o| o.get("players"))
             .and_then(|players| players.as_array())
-            .and_then(|a| a.get(0))
-            .and_then(|player| player.as_object());
+            .and_then(|a| a.get(0));
+        Ok(player.unwrap().clone())
+    }
+    pub fn get_player_server(&self, steamid: u64) -> Result<Option<String>, Error> {
+        let player = try!(self.get_player_summary(steamid));
 
-        if let Some(player) = player {
+        if let Some(player) = player.as_object() {
             if player.get("gameid").and_then(|gameid| gameid.as_string()) == Some("440") {
                 return Ok(player.get("gameserverip").and_then(|ip| ip.as_string()).map(|x| x.to_owned()))
             }
