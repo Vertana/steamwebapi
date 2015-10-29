@@ -62,7 +62,11 @@ impl ApiClient {
             .and_then(|o| o.get("players"))
             .and_then(|players| players.as_array())
             .and_then(|a| a.get(0));
-        Ok(player.unwrap().clone())
+        if let Some(player) = player {
+            Ok(player.clone())
+        } else {
+            Err(Error::BadBody)
+        }
     }
     pub fn get_player_server(&self, steamid: u64) -> Result<Option<String>, Error> {
         let player = try!(self.get_player_summary(steamid));
