@@ -1,7 +1,9 @@
 extern crate hyper;
 extern crate serde;
 extern crate serde_json;
+extern crate steamid;
 
+use steamid::*;
 use std::io::prelude::*;
 
 #[derive(Debug)]
@@ -38,8 +40,8 @@ impl ApiClient {
             apikey: apikey 
         }
     }
-    pub fn get_player_summary(&self, steamid: u64) -> Result<serde_json::Value, Error> { 
-        let steamids_str = steamid.to_string(); 
+    pub fn get_player_summary(&self, steamid: SteamId) -> Result<serde_json::Value, Error> { 
+        let steamids_str = steamid.to_u64().to_string(); 
         let endpoint = {
             let mut endpoint = hyper::Url::parse("http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/").unwrap();
             endpoint.set_query_from_pairs(vec![
@@ -68,7 +70,7 @@ impl ApiClient {
             Err(Error::BadBody)
         }
     }
-    pub fn get_player_server(&self, steamid: u64) -> Result<Option<String>, Error> {
+    pub fn get_player_server(&self, steamid: SteamId) -> Result<Option<String>, Error> {
         let player = try!(self.get_player_summary(steamid));
 
         if let Some(player) = player.as_object() {

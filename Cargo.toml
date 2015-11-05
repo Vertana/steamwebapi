@@ -1,6 +1,6 @@
 [package]
 name = "steamwebapi"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["XMPPwocky <nttheis@gmail.com>"]
 description = "Bad Steam API wrapper"
 license = "MIT"
@@ -10,3 +10,4 @@ repository = "https://github.com/XMPPwocky/steamwebapi"
 hyper = "~0.6.13"
 serde = "~0.6.1"
 serde_json = "~0.6.0"
+steamid = "~0.1.0"
