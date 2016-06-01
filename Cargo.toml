@@ -7,7 +7,7 @@ license = "MIT"
 repository = "https://github.com/XMPPwocky/steamwebapi"
 
 [dependencies]
-hyper = "0.7.13"
+hyper = "0.7"
 serde = "~0.6.1"
 serde_json = "~0.6.0"
 steamid = "~0.1.0"
